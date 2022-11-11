@@ -5,21 +5,27 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Year</title>
     <link rel="stylesheet" href="/css/style.css">
+	<link rel="stylesheet" href="/css/foundation.css">
 </head>
 <body>
 	<!-- navbar -->
     <div class="top-bar" id="nav-menu">
 		<div class="top-bar-left">
 		  <ul class="dropdown menu" data-dropdown-menu>
-			<li><a href="/year">Year</a></li>
-			<li><a href="/country">Country</a></li>
-			<li><a href="/sector">Sector</a></li>
+			<li><a href="/year/2019">Year</a></li>
+			<li><a href="/country/World">Country</a></li>
+			<li><a href="/sector/Total_including_LUCF">Sector</a></li>
 		  </ul>
 		</div>
 	</div>
 
 	<!-- TESTING DB QUERIES, REPLACE WITH CONTENT-->
-	<div><h1>%%EMISSIONS%% MTCO2e</h1></div>	
-
+	<div><h1>%%EMISSIONS%% MTCO2e</h1></div>
+		
+	<script src="js/vendor.js"></script>
+    <script src="js/foundation.js"></script>
+    <script type="application/javascript">
+        $(document).foundation();
+    </script>
 </body>
 </html>

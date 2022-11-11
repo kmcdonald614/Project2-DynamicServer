@@ -5,11 +5,23 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Sector</title>
     <link rel="stylesheet" href="/css/style.css">
+	<link rel="stylesheet" href="/css/foundation.css">
 </head>
 <body>
-    <div class="top-bar">
-		
+    <!-- navbar -->
+    <div class="top-bar" id="nav-menu">
+		<div class="top-bar-left">
+		  <ul class="dropdown menu" data-dropdown-menu>
+			<li><a href="/year/2019">Year</a></li>
+			<li><a href="/country/World">Country</a></li>
+			<li><a href="/sector/Total_including_LUCF">Sector</a></li>
+		  </ul>
+		</div>
 	</div>
-
+	<script src="js/vendor.js"></script>
+    <script src="js/foundation.js"></script>
+    <script type="application/javascript">
+        $(document).foundation();
+    </script>
 </body>
 </html>
