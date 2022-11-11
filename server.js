@@ -71,8 +71,62 @@ app.get('/year/:selected_year', (req, res) => {
             //send response
             res.status(200).type('html').send(response);
         });
-    })
-})
+    });
+});
+
+// GET request handler for sector route (e.x., 'localhost:8000/sector/all_ghg')
+app.get('/sector/:selected_sector', (req, res) => {
+    let sector = req.params.selected_sector;
+    console.log(sector);
+    fs.readFile(path.join(template_dir, 'sector_template.html'), (err, template) => {
+
+        let query = 'SELECT * FROM emissions WHERE sector = ? ;'
+
+        db.all(query, [sector], (err, rows) => {
+            console.log("ERROR: ", err);
+
+            console.log("rows", rows);
+
+            //modify template
+            let response = template.toString();
+            
+
+            //send response
+            res.status(200).type('html').send(response);
+        });
+        
+    });
+});
+
+// GET request handler for country route (e.x., 'localhost:8000/country/United_States')
+app.get('/country/:selected_country', (req, res) => {
+
+    let country = req.params.selected_country;
+    //TODO: adjust the ':selected_country' param to fit the db values
+    //      replace underscores with spaces and capitalize each word.
+    
+    console.log(country);
+    fs.readFile(path.join(template_dir, 'country_template.html'), (err, template) => {
+
+        let query = 'SELECT * FROM emissions WHERE country = ? AND sector="Transportation";';
+
+        db.all(query, [country], (err, rows) => {
+            console.log("QUERY", query)
+            console.log("ERROR: ", err);
+
+            console.log("rows", rows);
+
+            //modify template
+            let response = template.toString();
+            
+
+            //send response
+            res.status(200).type('html').send(response);
+        });
+        
+        
+    });
+});
 
 // Start server
 app.listen(port, () => {
