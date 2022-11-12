@@ -77,22 +77,63 @@ app.get('/year/:selected_year', (req, res) => {
 // GET request handler for sector route (e.x., 'localhost:8000/sector/all_ghg')
 app.get('/sector/:selected_sector', (req, res) => {
     let sector = req.params.selected_sector;
-    console.log(sector);
+    sector = capitalize(sector);
+
     fs.readFile(path.join(template_dir, 'sector_template.html'), (err, template) => {
 
-        let query = 'SELECT * FROM emissions WHERE sector = ? ;'
+        let query = "SELECT * FROM emissions WHERE sector = ? AND country ='World' AND gas ='All GHG';"
 
         db.all(query, [sector], (err, rows) => {
             console.log("ERROR: ", err);
-
-            console.log("rows", rows);
+            console.log(rows)
 
             //modify template
             let response = template.toString();
-            
+            response = response.replace('%%SECTOR_NAME%%', rows[0].sector);
+            let year = 1990;
+            let table_header = '';
+            for(let i=5; i < 34; i++) { //col 5 starts data | 29 cols of data
+                table_header += '<th> ' + year + ' </th>';
+                year++;
+            }
+            response = response.replace('%%YEAR_HEADER%%', table_header);
 
-            //send response
-            res.status(200).type('html').send(response);
+            let table_data = '';
+            year = 1990;
+            for(let i=5; i < 34; i++) {
+                table_data += '<td> ' + rows[0][year.toString()] + ' </td>'
+                year++;
+            }
+            response = response.replace('%%YEAR_DATA%%', table_data);
+            
+            let query2 = "SELECT distinct sector FROM  emissions ORDER BY country ASC;"
+            db.all(query2, (err, rows2) => {
+                console.log(err);
+                let next = '';
+                let prev = '';
+                for(let i=0; i < rows2.length; i++) {
+                    if(i === 0 && rows2[i].sector === sector) {
+                        next = rows2[i+1].sector;
+                        prev = rows2[rows2.sector-1].sector;
+                        break;
+                    }
+                    if(i === rows2.length - 1 && rows2[i].sector === sector) {
+                        next = rows2[0].sector;
+                        prev = rows2[i-1].sector;
+                        break;
+                    }    
+                    if(rows2[i].sector === sector) {
+                        next = rows2[i+1].sector;
+                        prev = rows2[i-1].sector;
+                        break;
+                    }
+                }
+                console.log(next)
+                response = response.replace("%%PREV_LINK%%", prev);
+                response = response.replace("%%NEXT_LINK%%", next);
+                //send response
+                res.status(200).type('html').send(response);
+            })
         });
         
     });
@@ -102,33 +143,93 @@ app.get('/sector/:selected_sector', (req, res) => {
 app.get('/country/:selected_country', (req, res) => {
 
     let country = req.params.selected_country;
+    country = capitalize(country);
     //TODO: adjust the ':selected_country' param to fit the db values
     //      replace underscores with spaces and capitalize each word.
     
     console.log(country);
     fs.readFile(path.join(template_dir, 'country_template.html'), (err, template) => {
 
-        let query = 'SELECT * FROM emissions WHERE country = ? AND sector="Transportation";';
+        let query = "SELECT * FROM emissions WHERE country = ? AND sector = 'Total including LUCF' AND gas = 'All GHG';"
 
         db.all(query, [country], (err, rows) => {
-            console.log("QUERY", query)
             console.log("ERROR: ", err);
-
-            console.log("rows", rows);
 
             //modify template
             let response = template.toString();
-            
+            response = response.replace('%%COUNTRY_NAME%%', rows[0].country);
+            let year = 1990;
+            let table_header = '';
+            for(let i=5; i < 34; i++) { //col 5 starts data | 29 cols of data
+                table_header += '<th> ' + year + ' </th>';
+                year++;
+            }
+            response = response.replace('%%YEAR_HEADER%%', table_header);
 
-            //send response
-            res.status(200).type('html').send(response);
+            let table_data = '';
+            year = 1990;
+            for(let i=5; i < 34; i++) {
+                table_data += '<td> ' + rows[0][year.toString()] + ' </td>'
+                year++;
+            }
+            response = response.replace('%%YEAR_DATA%%', table_data);
+            
+            let query2 = "SELECT distinct country FROM  emissions ORDER BY country ASC;"
+            db.all(query2, (err, rows2) => {
+                console.log(err);
+                let next = '';
+                let prev = '';
+                for(let i=0; i < rows2.length; i++) {
+                    if(i === 0 && rows2[i].country === country) {
+                        next = rows2[i+1].country;
+                        prev = rows2[rows2.length-1].country;
+                        break;
+                    }
+                    if(i === rows2.length - 1 && rows2[i].country === country) {
+                        next = rows2[0].country;
+                        prev = rows2[i-1].country;
+                        break;
+                    }    
+                    if(rows2[i].country === country) {
+                        next = rows2[i+1].country;
+                        prev = rows2[i-1].country;
+                        break;
+                    }
+                }
+                response = response.replace("%%PREV_LINK%%", prev);
+                response = response.replace("%%NEXT_LINK%%", next);
+                //send response
+                res.status(200).type('html').send(response);
+            })
         });
         
         
     });
 });
 
+app.get('/test/', (req, res) => {
+    fs.readFile(path.join(template_dir, 'test_template.html'), (err, template) => {
+        console.log(err);
+        let response = template.toString();
+        res.status(200).type('html').send(response)
+    });
+})
+
 // Start server
 app.listen(port, () => {
     console.log('Now listening on port ' + port);
 });
+
+function capitalize(string) {
+    let words = string.split('_');
+    let ret = '';
+    for(let i=0 ; i < words.length; i++) { //Array of Capitalized words
+        words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
+        if(i < words.length-1) {
+            ret += words[i] + ' ';
+        } else {
+            ret += words[i];
+        }
+    }
+    return ret
+}
