@@ -13,7 +13,7 @@
 		<div class="top-bar-left">
 		  <ul class="dropdown menu" data-dropdown-menu>
 			<li><a href="/year/2019">Year</a></li>
-			<li><a href="/country/world">Country</a></li>
+			<li><a href="/country/World">Country</a></li>
 			<li><a href="/sector/Total_including_LUCF">Sector</a></li>
 		  </ul>
 		</div>
@@ -21,21 +21,33 @@
 
 	<div class="grid-container">
 		<div class="grid-x padding-x">
-			<div class="cell-auto">
+			<div class="cell">
 				<h1>%%COUNTRY_NAME%%</h1>
+				<p>All greenhouse gases</p>
+				<p>All Sectors</p>
 			</div>
-			<div class="cell-auto">
-				<table>
-					<thead>
-						%%YEAR%%
-					</thead>
-					<tbody>
-						%%YEAR_DATA%%
-					</tbody>
-				</table>
+			<div class="cell medium-12 medium-cell-block">
+				<div class="">
+					<table >
+						<thead>
+							<tr>
+								%%YEAR_HEADER%%
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								%%YEAR_DATA%%
+							</tr>
+						</tbody>
+					</table>
+				</div>
 			</div>
-			<div class="cell-auto">
+			<div class="cell" id="country_chart" style="height: auto; width: auto;">
 				
+			</div>
+			<div class="cell">
+				<a href="%%PREV_LINK%%">Next Page</a>
+				<a href="%%NEXT_LINK%%">Next Page</a>
 			</div>
 		</div>
 	</div>

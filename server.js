@@ -102,13 +102,15 @@ app.get('/sector/:selected_sector', (req, res) => {
 app.get('/country/:selected_country', (req, res) => {
 
     let country = req.params.selected_country;
+    country.toLowerCase();
+    country.charAt(0).toUpperCase();
     //TODO: adjust the ':selected_country' param to fit the db values
     //      replace underscores with spaces and capitalize each word.
     
     console.log(country);
     fs.readFile(path.join(template_dir, 'country_template.html'), (err, template) => {
 
-        let query = 'SELECT * FROM emissions WHERE country = ? AND sector="Transportation";';
+        let query = "SELECT * FROM emissions WHERE country = ? AND sector = 'Total including LUCF' AND gas = 'All GHG';"
 
         db.all(query, [country], (err, rows) => {
             console.log("QUERY", query)
@@ -118,10 +120,50 @@ app.get('/country/:selected_country', (req, res) => {
 
             //modify template
             let response = template.toString();
-            
+            response = response.replace('%%COUNTRY_NAME%%', rows[0].country);
+            let year = 1990;
+            let table_header = '';
+            for(let i=5; i < 34; i++) { //col 5 starts data | 29 cols of data
+                table_header += '<th> ' + year + ' </th>';
+                year++;
+            }
+            response = response.replace('%%YEAR_HEADER%%', table_header);
 
-            //send response
-            res.status(200).type('html').send(response);
+            let table_data = '';
+            year = 1990;
+            for(let i=5; i < 34; i++) {
+                table_data += '<td> ' + rows[0][year.toString()] + ' </td>'
+                year++;
+            }
+            response = response.replace('%%YEAR_DATA%%', table_data);
+            
+            let query2 = "SELECT distinct country FROM  emissions ORDER BY country ASC;"
+            db.all(query2, (err, rows2) => {
+                console.log(err);
+                let next = '';
+                let prev = '';
+                for(let i=0; i < rows2.length; i++) {
+                    if(i === 0 && rows2[i].country === country) {
+                        next = rows2[i+1].country;
+                        prev = rows2[rows2.length-1].country;
+                        break;
+                    }
+                    if(i === rows2.length - 1 && rows2[i].country === country) {
+                        next = rows2[0].country;
+                        prev = rows2[i-1].country;
+                        break;
+                    }    
+                    if(rows2[i].country === country && rows2[i].country === country) {
+                        next = rows2[i+1].country;
+                        prev = rows2[i-1].country;
+                        break;
+                    }
+                }
+                response = response.replace("%%PREV_LINK%%", prev);
+                response = response.replace("%%NEXT_LINK%%", next);
+                //send response
+                res.status(200).type('html').send(response);
+            })
         });
         
         
