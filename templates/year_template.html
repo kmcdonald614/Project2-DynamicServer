@@ -5,22 +5,85 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Year</title>
 	<link rel="stylesheet" href="/css/foundation.css">
+<<<<<<< Updated upstream
+=======
+	<script src="node_modules\anychart\dist\js\anychart-base.min.js"></script>
+        <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-base.min.js" type="text/javascript"></script>
+>>>>>>> Stashed changes
 </head>
 <body>
-	<!-- navbar -->
+    <!-- navbar -->
     <div class="top-bar" id="nav-menu">
 		<div class="top-bar-left">
 		  <ul class="dropdown menu" data-dropdown-menu>
 			<li><a href="/year/2019">Year</a></li>
+<<<<<<< Updated upstream
 			<li><a href="/country/World">Country</a></li>
+=======
+			<li><a href="/country/world">Country</a></li>
+>>>>>>> Stashed changes
 			<li><a href="/sector/Total_including_LUCF">Sector</a></li>
 		  </ul>
 		</div>
 	</div>
 
+<<<<<<< Updated upstream
 	<!-- TESTING DB QUERIES, REPLACE WITH CONTENT-->
 	<div><h1>%%EMISSIONS%% MTCO2e</h1></div>
 		
+=======
+	<div class="grid-container">
+		<div class="grid-x padding-x">
+			<div class="cell medium-3"></div>
+			<div class="cell-medium-6">
+				<div class="cell">
+					<h1>%%YEAR_NAME%%</h1>
+					<p>All greenhouse gases</p>
+					<p>All Countries</p>
+				</div>
+				<div class="cell medium-12 medium-cell-block">
+					<div class="">
+						<table >
+							<thead>
+								<tr>
+									%%COUNTRY_HEADER%%
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									%%COUNTRY_DATA%%
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				
+				
+
+				<div id="year_charts1"style="width:400; height:400;"></div>
+
+
+				<div id=" Year_chart2" style="width:400;height:400;"></div>
+				<div class="cell">
+					<a href="%%PREV_LINK%%">Previous Page</a>
+					<a href="%%NEXT_LINK%%">Next Page</a>
+				</div>
+			</div>
+		</div>
+
+			<div class=" year-container">
+				<ul class="drop-bar-chart" data-dropdown-menu>
+						
+				</ul>
+				
+
+			</div>
+
+
+		</div>
+	</div>
+
+>>>>>>> Stashed changes
 	<script src="js/vendor.js"></script>
     <script src="js/foundation.js"></script>
     <script type="application/javascript">

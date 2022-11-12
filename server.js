@@ -56,17 +56,35 @@ app.get('/year/:selected_year', (req, res) => {
         
         // placeholders (?) only work for db values, not attributes.
         // I have tried to protect the query from SQL injection by converting year to int and back to a string.
-        let query = 'SELECT"'+year.toString()+'" AS emissions, country, sector, Gas FROM emissions WHERE country="World" AND Gas="All GHG";'; // <-- change this
+        let query = 'SELECT "'+year.toString()+'" AS year, country , sector, gas FROM emissions Where sector="Total Including LUCF" AND Gas="All GHG";'; // <-- change this
         
         //query the database
         db.all(query, [], (err, rows) => {
             console.log("ERROR: ", err);
             //grab relevant info
             console.log("rows", rows);
-
+            let query2="SELECT distinct country from emissions";
+            db.all(query2,[],(err,rows)=>{
+                for(let i=0;rows.length;i++){
+                    table_data=table_data+'<td>'+rows[i].country+'</td>';
+                }
+            })
             // modify template
             let response = template.toString();
-            response = response.replace("%%EMISSIONS%%", rows[0].emissions);
+            let table_header='';
+            for(let i=0; i<rows.length;i++){
+                table_header+= '<th>'+rows[i].country +'</th>'
+                
+            }
+            response=response.replace("%%COUNTRY_HEADER%%",table_header);
+
+            let table_data='';
+            for(let i=0;i<rows.length;i++){
+                table_data+= '<td>' + rows[i].year + '</td>';
+            }
+
+            response=response.replace("%%COUNTRY_DATA%%",table_data);
+        
 
             //send response
             res.status(200).type('html').send(response);
