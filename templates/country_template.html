@@ -1,61 +1,61 @@
 <!DOCTYPE html>
 <html>
-<head>
-	<meta charset="utf-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Country</title>
-    <link rel="stylesheet" href="/css/style.css">
-	<link rel="stylesheet" href="/css/foundation.css">
-</head>
-<body>
-    <!-- navbar -->
-    <div class="top-bar" id="nav-menu">
-		<div class="top-bar-left">
-		  <ul class="dropdown menu" data-dropdown-menu>
-			<li><a href="/year/2019">Year</a></li>
-			<li><a href="/country/World">Country</a></li>
-			<li><a href="/sector/Total_including_LUCF">Sector</a></li>
-		  </ul>
-		</div>
-	</div>
-
-	<div class="grid-container">
-		<div class="grid-x padding-x">
-			<div class="cell">
-				<h1>%%COUNTRY_NAME%%</h1>
-				<p>All greenhouse gases</p>
-				<p>All Sectors</p>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>Country</title>
+		<link rel="stylesheet" href="/css/style.css">
+		<link rel="stylesheet" href="/css/foundation.css">
+	</head>
+	<body>
+		<!-- navbar -->
+		<div class="top-bar" id="nav-menu">
+			<div class="top-bar-left">
+			<ul class="dropdown menu" data-dropdown-menu>
+				<li><a href="/year/2019">Year</a></li>
+				<li><a href="/country/World">Country</a></li>
+				<li><a href="/sector/Total_including_LUCF">Sector</a></li>
+			</ul>
 			</div>
-			<div class="cell medium-12 medium-cell-block">
-				<div class="">
-					<table >
-						<thead>
-							<tr>
-								%%YEAR_HEADER%%
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								%%YEAR_DATA%%
-							</tr>
-						</tbody>
-					</table>
+		</div>
+
+		<div class="grid-container">
+			<div class="grid-x padding-x">
+				<div class="cell">
+					<h1>%%COUNTRY_NAME%%</h1>
+					<p>All greenhouse gases</p>
+					<p>All Sectors</p>
+				</div>
+				<div class="cell medium-12 medium-cell-block">
+					<div class="">
+						<table >
+							<thead>
+								<tr>
+									%%YEAR_HEADER%%
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									%%YEAR_DATA%%
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
+				<div class="cell" id="country_chart" style="height: auto; width: auto;">
+					
+				</div>
+				<div class="cell">
+					<a href="%%PREV_LINK%%">Previous Page</a>
+					<a href="%%NEXT_LINK%%">Next Page</a>
 				</div>
 			</div>
-			<div class="cell" id="country_chart" style="height: auto; width: auto;">
-				
-			</div>
-			<div class="cell">
-				<a href="%%PREV_LINK%%">Next Page</a>
-				<a href="%%NEXT_LINK%%">Next Page</a>
-			</div>
 		</div>
-	</div>
 
-	<script src="js/vendor.js"></script>
-    <script src="js/foundation.js"></script>
-    <script type="application/javascript">
-        $(document).foundation();
-    </script>
-</body>
+		<script src="js/vendor.js"></script>
+		<script src="js/foundation.js"></script>
+		<script type="application/javascript">
+			$(document).foundation();
+		</script>
+	</body>
 </html>
