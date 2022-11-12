@@ -128,6 +128,14 @@ app.get('/country/:selected_country', (req, res) => {
     });
 });
 
+app.get('/test/', (req, res) => {
+    fs.readFile(path.join(template_dir, 'test_template.html'), (err, template) => {
+        console.log(err);
+        let response = template.toString();
+        res.status(200).type('html').send(response)
+    });
+})
+
 // Start server
 app.listen(port, () => {
     console.log('Now listening on port ' + port);

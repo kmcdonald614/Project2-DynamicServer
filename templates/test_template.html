@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>TESTING</title>
+        <script src="node_modules\anychart\dist\js\anychart-base.min.js"></script>
+    </head>
+    <body>
+        
+        <div id="container" style="height:500px; width:500px;"></div>
+
+        <script>
+            //Here there be Javascript
+            var chart = anychart.pie();
+            chart.data([["Red", 4], ["Blue", 6]]);
+            chart.title("Red/Blue");
+            chart.container('container');
+            chart.draw();
+        </script>
+    </body>
+</html>
