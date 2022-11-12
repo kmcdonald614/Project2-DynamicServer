@@ -4,19 +4,54 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>TESTING</title>
-        <script src="node_modules\anychart\dist\js\anychart-base.min.js"></script>
+        <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-base.min.js" type="text/javascript"></script> <!--Must include to use anychart-->
     </head>
     <body>
         
         <div id="container" style="height:500px; width:500px;"></div>
+        <br>
+        <div id="barchart" style="height:500px; width:100%vw;"></div>
 
         <script>
-            //Here there be Javascript
+            anychart.onDocumentLoad(function () {
+            // create an instance of a pie chart
             var chart = anychart.pie();
-            chart.data([["Red", 4], ["Blue", 6]]);
-            chart.title("Red/Blue");
-            chart.container('container');
+            // set the data
+            chart.data([
+            ["Chocolate", 5],
+            ["Rhubarb compote", 2],
+            ["Crêpe Suzette", 2],
+            ["American blueberry", 2],
+            ["Buttermilk", 1]
+            ]);
+            // set chart title
+            chart.title("Top 5 pancake fillings");
+            // set the container element 
+            chart.container("container");
+            // initiate chart display
             chart.draw();
-        </script>
+
+            // create data
+            var data2 = [
+            ["John", 10000],
+            ["Jake", 12000],
+            ["Peter", 13000],
+            ["James", 10000],
+            ["Mary", 9000]
+            ];
+
+            // create a chart
+            chart2 = anychart.bar();
+
+            // create a bar series and set the data
+            var series = chart2.bar(data2);
+
+            // set the container id
+            chart2.container("barchart");
+
+            // initiate drawing the chart2
+            chart2.draw();
+            });
+          </script>
     </body>
 </html>
