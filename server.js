@@ -31,7 +31,7 @@ app.use(express.static(public_dir));
 
 // GET request handler for home page '/' (redirect to desired route)
 app.get('/', (req, res) => {
-    let home = '/year/'; // <-- change this
+    let home = '/country/world'; // <-- change this
     res.redirect(home);
 });
 
@@ -56,7 +56,7 @@ app.get('/year/:selected_year', (req, res) => {
         
         // placeholders (?) only work for db values, not attributes.
         // I have tried to protect the query from SQL injection by converting year to int and back to a string.
-        let query = 'SELECT "'+year.toString()+'" AS year, country , sector, gas FROM emissions Where sector="Total Including LUCF" AND Gas="All GHG";'; // <-- change this
+        let query = 'SELECT "'+year.toString()+'" AS year, country , sector, gas FROM emissions Where sector="Total including LUCF" AND Gas="All GHG";'; // <-- change this
         
         //query the database
         db.all(query, [], (err, rows) => {
@@ -65,7 +65,7 @@ app.get('/year/:selected_year', (req, res) => {
             console.log("rows", rows);
             let query2="SELECT distinct country from emissions";
             db.all(query2,[],(err,rows)=>{
-                for(let i=0;rows.length;i++){
+                for(let i=0; i<rows.length;i++){
                     table_data=table_data+'<td>'+rows[i].country+'</td>';
                 }
             })
@@ -226,6 +226,7 @@ app.get('/country/:selected_country', (req, res) => {
     });
 });
 
+// GET request handler for testing route
 app.get('/test/', (req, res) => {
     fs.readFile(path.join(template_dir, 'test_template.html'), (err, template) => {
         console.log(err);
@@ -239,6 +240,7 @@ app.listen(port, () => {
     console.log('Now listening on port ' + port);
 });
 
+//string formatting for db queries.
 function capitalize(string) {
     let words = string.split('_');
     let ret = '';
