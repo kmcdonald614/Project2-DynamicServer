@@ -43,7 +43,7 @@ app.get('/year/:selected_year', (req, res) => {
         // modify `template` and send response
         // this will require a query to the SQL database
 
-        res.status(200).type('html').send(template); // <-- you may need to change this
+        res.status(200).type('html').send(template); // <-- you may need to change thigs
     });
 });
 */
@@ -195,11 +195,21 @@ app.get('/country/:selected_country', (req, res) => {
             response = response.replace('%%COUNTRY_NAME%%', rows[0].country);
             let year = 1990;
             let table_header = '';
+            let chart1 = '[';
             for(let i=5; i < 34; i++) { //col 5 starts data | 29 cols of data
+                chart1 = chart1+"['"+year+"', "+rows[0][year.toString()]+"]";
+                if(i==33) {
+                    chart1 = chart1+"]";
+                } else {
+                    chart1 = chart1+", ";
+                }
                 table_header += '<th> ' + year + ' </th>';
                 year++;
             }
             response = response.replace('%%YEAR_HEADER%%', table_header);
+            response = response.replace('%%CHART1_DATA%%', chart1);
+            response = response.replace('%%COUNTRY%%', rows[0].country);
+            response = response.replace('%%COUNTRY2%%', rows[0].country);
 
             let table_data = '';
             year = 1990;
