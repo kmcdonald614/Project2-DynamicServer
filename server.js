@@ -34,6 +34,21 @@ app.get('/', (req, res) => {
     let home = '/country/world'; // <-- change this
     res.redirect(home);
 });
+//redirect year to base
+app.get('/year/', (req, res) => {
+    let home = '/year/2019'; // <-- change this
+    res.redirect(home);
+});
+// redirect sector to base
+app.get('/sector/', (req, res) => {
+    let home = '/sector/Total_including_LUCF'; // <-- change this
+    res.redirect(home);
+});
+// redirect country to base
+app.get('/world/', (req, res) => {
+    let home = '/country/world'; // <-- change this
+    res.redirect(home);
+});
 
 /*
 // Example GET request handler for data about a specific year
