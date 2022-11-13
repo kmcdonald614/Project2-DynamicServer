@@ -210,9 +210,25 @@ app.get('/sector/:selected_sector', (req, res) => {
                             break;
                         }
                     }
-                    console.log(next)
+                    let description={
+                        "Agriculture": "Agriculture as a sector is responsible for non-CO2 emissions generated within the farm gate by crops and livestock activities, as well as for CO2 emissions caused by the conversion of natural ecosystems, mostly forest land and natural peatlands, to agricultural land use.",
+                        "Building":"Building emissions, as typically measured, are a combination of two things. First is day-to-day energy use—known as the “operational carbon emissions” that comes from powering lighting, heating, and cooling. Globally, building operations account for about 28 percent of emissions annually. Second is the amount of carbon generated through manufacturing building materials, transporting materials to construction sites, and the actual construction process—what’s known as the “embodied carbon of a building,” which accounts for about one quarter of a building’s total lifecycle carbon emissions. Globally, the embodied carbon of a buildings account for about 11 percent of emissions.",
+                        "Bunker Fuels" : "Pitch black and thick as molasses, bunker fuel is made from the dregs of the refining process. It's also loaded with sulfur — the chemical that, when burned, produces noxious gases and fine particles that can harm human health and the environment, especially along highly trafficked areas.",
+                        "Electricity/Heat":     "Energy is at the heart of the climate challenge – and key to the solution. Generating electricity and heat by burning fossil fuels – coal, oil, or gas – causes a large chunk of the greenhouse gases, such as carbon dioxide and nitrous oxide, that blanket the Earth and trap the sun's heat.",
+                        "Energy": "Energy emissions are most often waste products of a process aimed at obtaining useful work. The most common emissions from energy are associated with the generation of electricity and the transportation of people and goods.",
+                        "Fugitive Emissions": "Fugitive emissions are leaks and other irregular releases of gases or vapors from a pressurized containment – such as appliances, storage tanks, pipelines, wells, or other pieces of equipment – mostly from industrial activities. In addition to the economic cost of lost commodities, fugitive emissions contribute to local air pollution and may cause further environmental harm.",
+                        "Industrial Processes": "Industrial processes (e.g., cement production, ammonia production) involving chemical or physical transformations other than fuel combustion. For example, the calcination of carbonates in a kiln during cement production or the oxidation of methane in an ammonia process results in the release of process CO2 emissions to the atmosphere.",
+                        "Land-Use Change and Forestry" : "Land use change  refers to the conversion of an area of land's use by humans from one state to another.  Land may be converted from grassland to cropland, or from wilderness to land to graze cattle.Forestry is the use and management of trees and other forest resources for human benefit. Worldwide, around 1.15 billion hectares of forest are used by humans, mainly for the production of wood and other forest commodities.",
+                        "Manufacturing/Construction":"Construction emissions means any exhaust emissions resulting from the use of internal combustion engines related to construction activity. Manufacturing emissions come from the gasses and fuels that are created when manufacturing goods.",
+                        "Other Fuel Combustion": "These are other fuels being burned that have not been mentioned.",
+                        "Total excluding LUCF": "These are the total emissions excluding the emissions coming from Land-Use Change and Forestry(LUCF).",
+                        "Total including LUCF": "These emissions come from every type of emission including Land-Use Change and Forestry(LUCF).",
+                        "Transportation": "Greenhouse gas emissions from transportation primarily come from burning fossil fuel for our cars, trucks, ships, trains, and planes.",
+                        "Waste" : "Waste emissions include methane from the breakdown of solid wastes at a landfill, biological treatment of solid wastes, incineration and burning of waste, wastewater treatment and discharge and other sources (e.g. emissions arising from flaring of methane at a landfill site)."
+                    }
                     response = response.replace("%%PREV_LINK%%", prev);
                     response = response.replace("%%NEXT_LINK%%", next);
+                    response = response.replace("%%DESCRIPTION%%", description[sector]);
                     //send response
                     res.status(200).type('html').send(response);
                 })
@@ -312,6 +328,12 @@ app.get('/test/', (req, res) => {
         res.status(200).type('html').send(response)
     });
 })
+
+app.use((req, res, next) => {
+    let route = req.originalUrl;
+    let fileNotFound = `<h1>404: File Not Found</h1><h2>Cannot find route: ${route}</h2>`
+    res.status(404).type('html').send(fileNotFound)
+});
 
 // Start server
 app.listen(port, () => {
