@@ -5,8 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Year</title>
 	<link rel="stylesheet" href="/css/foundation.css">
-	<script src="node_modules\anychart\dist\js\anychart-base.min.js"></script>
-        <script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-base.min.js" type="text/javascript"></script>
+	<script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-base.min.js" type="text/javascript"></script> <!--Must include to use anychart-->
 </head>
 <body>
     <!-- navbar -->
@@ -45,17 +44,12 @@
 						</table>
 					</div>
 				</div>
-				
-				
-
-				<div id="year_charts1"style="width:400; height:400;"></div>
-
-
-				<div id=" Year_chart2" style="width:400;height:400;"></div>
 				<div class="cell">
 					<a href="%%PREV_LINK%%">Previous Page</a>
 					<a href="%%NEXT_LINK%%">Next Page</a>
 				</div>
+			</div>
+			<div id="chart1" class="cell small-12" style="height:500px; width: 1000px;">
 			</div>
 		</div>
 
@@ -71,8 +65,42 @@
 		</div>
 	</div>
 
-	<script src="js/vendor.js"></script>
-    <script src="js/foundation.js"></script>
+	<script type="application/javascript">
+		anychart.onDocumentReady( () => {
+			var chart1 = anychart.column();
+
+			chart1.animation(true);
+			chart1.title("Greenhouse Gas Emissions %%YEAR%%");
+
+			var series = chart1.column(
+				// %%CHART1_DATA%%
+				[
+					['world', 32523.58],
+					['China', 2891.73],
+					['United States', 5417.32]
+				]);
+
+			series.tooltip().titleFormat('{%X}');
+			series.tooltip().position('center-top').anchor('center-bottom').offsetX(0).offsetY(5).format('{%Value}{groupsSeparator: } MtCO2e');
+
+			chart1.yScale().minimum(0);
+			chart1.yAxis().labels().format('{%Value}{groupsSeparator: }');
+
+			chart1.tooltip().positionMode('point');
+			chart1.interactivity().hoverMode('by-x');
+
+			chart1.xAxis().title('Country');
+      		chart1.yAxis().title('MtCO2e');
+
+			chart1.container('chart1');
+
+			chart1.draw();
+			
+		})
+	</script>
+
+	<script src="/js/vendor.js"></script>
+    <script src="/js/foundation.js"></script>
     <script type="application/javascript">
         $(document).foundation();
     </script>
