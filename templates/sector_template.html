@@ -5,6 +5,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<title>Sector</title>
 		<link rel="stylesheet" href="/css/foundation.css">
+		<script src="https://cdn.anychart.com/releases/8.11.0/js/anychart-base.min.js" type="text/javascript"></script>
 	</head>
 	<body>
 		<!-- navbar -->
@@ -42,7 +43,7 @@
 						</table>
 					</div>
 				</div>
-				<div class="cell" id="country_chart" style="height: auto; width: auto;">
+				<div class="cell" id="chart1" style="height: 500px; width: 1000px;">
 					
 				</div>
 				<div class="cell">
@@ -51,6 +52,51 @@
 				</div>
 			</div>
 		</div>
+
+		<script type="application/javascript">
+			anychart.onDocumentReady(() => {
+				var dataSet = anychart.data.set(%%CHART1_DATA%%);
+				var firstSeriesData = dataSet.mapAs({x: 0, value: 1});
+				var secondSeriesData = dataSet.mapAs({x: 0, value: 2})
+				var chart1 = anychart.line();
+				chart1.animation(true);
+				chart1.padding([10, 20, 5, 20]);
+				chart1.crosshair().enabled(true).yLabel(false).yStroke(null);
+				chart1.tooltip().positionMode('point');
+				chart1.title("%%SECTOR%%'s Emissions by Year");
+				chart1.yAxis().title('Metric Tons of CO2e');
+      			chart1.xAxis().labels().padding(5);
+
+				var firstSeries = chart1.line(firstSeriesData);
+				firstSeries.name("%%SECTOR2%%");
+				firstSeries.hovered().markers().enabled(true).type('circle').size(4);
+				firstSeries
+					.tooltip()
+					.position('right')
+					.anchor('left-center')
+					.offsetX(5)
+					.offsetY(5);
+
+				var secondSeries = chart1.line(secondSeriesData);
+				secondSeries.name("Total Emissions");
+				secondSeries.hovered().markers().enabled(true).type('circle').size(4);
+				secondSeries
+					.tooltip()
+					.position('right')
+					.anchor('left-center')
+					.offsetX(5)
+					.offsetY(5);
+
+
+				
+				
+				chart1.legend().enabled(true).fontSize(13).padding([0, 0, 10, 0]);
+
+				chart1.container('chart1');
+				chart1.draw();
+			})
+		</script>
+
 		<script src="/js/vendor.js"></script>
 		<script src="/js/foundation.js"></script>
 		<script type="application/javascript">
