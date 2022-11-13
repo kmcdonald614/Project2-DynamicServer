@@ -124,15 +124,16 @@ app.get('/sector/:selected_sector', (req, res) => {
             }
             response = response.replace('%%YEAR_DATA%%', table_data);
             
-            let query2 = "SELECT distinct sector FROM  emissions ORDER BY country ASC;"
+            let query2 = "SELECT distinct sector FROM  emissions ORDER BY sector ASC;"
             db.all(query2, (err, rows2) => {
+                console.log(rows2);
                 console.log(err);
                 let next = '';
                 let prev = '';
                 for(let i=0; i < rows2.length; i++) {
                     if(i === 0 && rows2[i].sector === sector) {
                         next = rows2[i+1].sector;
-                        prev = rows2[rows2.sector-1].sector;
+                        prev = rows2[rows2.length-1].sector;
                         break;
                     }
                     if(i === rows2.length - 1 && rows2[i].sector === sector) {
