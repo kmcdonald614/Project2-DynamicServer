@@ -83,27 +83,18 @@ app.get('/year/:selected_year', (req, res) => {
                 response = response.replace("%%CHART1_DATA%%", chart_series);
                 response = response.replace("%%CHART2_DATA%%", chart2);
 
-                const years= ["1990","1991","1992","1993","1994","1995",
-        "1996","1997","1998","1999","2000","2001","2002","2003","2004"
-    ,"2005","2006","2007","2008","2009","2010","2011","2012","2013",
-"2014","2015","2016","2017","2018","2019"];
+        
         let prev="";
         let next="";
-        for(let i=0;i<years.length;i++){
-            if(years[i]===year&&years[i]==1990){
-                console.log(years[years.length-1]);
-                prev=years[years.length-1];
-                next=years[i+1];
-                break;
-            }else if(years[i]===year&&years[i]!=1990&&years[i]<2019){
-                prev=years[i-1];
-                next=years[i+1];
-                break;
-            }else{
-                prev=years[i-1];
-                next=years[0];
-                break;
-            }
+        if(year===1990) {
+            prev = "2019";
+            next = (year+1).toString();
+        } else if(year===2019) {
+            prev = (year-1).toString();
+            next = "1990";
+        } else {
+            prev = (year-1).toString();
+            next = (year+1).toString();
         }
 
         response=response.replace("%%PREV_LINK%%",prev);
