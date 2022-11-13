@@ -49,8 +49,8 @@
 					<a href="%%NEXT_LINK%%">Next Page</a>
 				</div>
 			</div>
-			<div id="chart1" class="cell small-12" style="height:500px; width: 1000px;">
-			</div>
+			<div id="chart1" class="cell small-12" style="height:500px; width: 1000px;"></div>
+			<div id="chart2" class="cell small-12" style="height:500px; width: 500px;"></div>
 		</div>
 
 			<div class=" year-container">
@@ -70,15 +70,9 @@
 			var chart1 = anychart.column();
 
 			chart1.animation(true);
-			chart1.title("Greenhouse Gas Emissions %%YEAR%%");
+			chart1.title("Top 10 Greenhouse Gas Emissions: %%YEAR%%");
 
-			var series = chart1.column(
-				// %%CHART1_DATA%%
-				[
-					['world', 32523.58],
-					['China', 2891.73],
-					['United States', 5417.32]
-				]);
+			var series = chart1.column(%%CHART1_DATA%%);
 
 			series.tooltip().titleFormat('{%X}');
 			series.tooltip().position('center-top').anchor('center-bottom').offsetX(0).offsetY(5).format('{%Value}{groupsSeparator: } MtCO2e');
@@ -90,13 +84,43 @@
 			chart1.interactivity().hoverMode('by-x');
 
 			chart1.xAxis().title('Country');
-      		chart1.yAxis().title('MtCO2e');
+      		chart1.yAxis().title('Metric tons CO2 equivalent');
 
 			chart1.container('chart1');
 
 			chart1.draw();
-			
-		})
+
+			var chart2 = anychart.pie(%%CHART2_DATA%%);
+			chart2.innerRadius('60%').explode(25);
+			var label2 = anychart.standalones.label();
+			label2.enabled(true)
+				.text('Total emissions by \nSector: %%YEAR2%%')
+				.width('100%')
+				.height('100%')
+				.adjustFontSize(true, true)
+				.minFontSize(10)
+				.maxFontSize(25)
+				.fontColor('#60727b')
+				.position('center')
+				.anchor('center')
+				.hAlign('center')
+				.vAlign('middle');
+
+			chart2.center().content(label2);
+
+			var palette = anychart.palettes.rangeColors();
+			palette.items([{color: '#c26364'}, {color: '#dba869'}])
+			chart2.palette(palette);
+
+			chart2.hovered().fill('#6f3448');
+			chart2.selected().fill('#ff6e40');
+			chart2.hovered().outline().fill(() => {return anychart.color.lighten('#6f3448'), 0.55});
+
+			chart2.container('chart2');
+			chart2.draw();
+
+		});
+
 	</script>
 
 	<script src="/js/vendor.js"></script>

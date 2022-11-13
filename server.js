@@ -56,38 +56,54 @@ app.get('/year/:selected_year', (req, res) => {
         
         // placeholders (?) only work for db values, not attributes.
         // I have tried to protect the query from SQL injection by converting year to int and back to a string.
-        let query = 'SELECT "'+year.toString()+'" AS year, country , sector, gas FROM emissions Where sector="Total including LUCF" AND Gas="All GHG";'; // <-- change this
+        let query = 'SELECT "'+year.toString()+'" AS year, country , sector, gas FROM emissions Where sector="Total including LUCF" AND Gas="All GHG" ORDER BY year DESC;'; // <-- change this
         
         //query the database
         db.all(query, [], (err, rows) => {
             console.log("ERROR: ", err);
             //grab relevant info
-            console.log("rows", rows);
-            let query2="SELECT distinct country from emissions";
-            db.all(query2,[],(err,rows)=>{
-                for(let i=0; i<rows.length;i++){
-                    table_data=table_data+'<td>'+rows[i].country+'</td>';
+            //console.log("rows", rows);
+            let chart2 = '[';
+            db.all('SELECT sector, "'+year.toString()+'" as emissions FROM emissions WHERE country = "World" AND gas="All GHG"; ', (err, rows2) => {
+                console.log("Error on query2: ", err);
+                console.log(rows2);
+                for( let i=3; i<rows2.length; i++) {
+                    chart2 = chart2+"['"+rows2[i].sector+"', "+rows2[i].emissions+"]"
+                    if(i==rows2.length-1) {
+                        chart2 = chart2+']'; 
+                    } else {
+                        chart2 = chart2+', ';
+                    }
                 }
+                response=response.replace("%%COUNTRY_HEADER%%",table_header);
+                response=response.replace("%%COUNTRY_DATA%%",table_data);
+                response = response.replace("%%YEAR%%", year);                
+                response = response.replace("%%YEAR2%%", year);
+                response = response.replace("%%CHART1_DATA%%", chart_series);
+                response = response.replace("%%CHART2_DATA%%", chart2);
+                //send response
+                res.status(200).type('html').send(response);
             })
+
             // modify template
             let response = template.toString();
             let table_header='';
-            for(let i=0; i<rows.length;i++){
-                table_header+= '<th>'+rows[i].country +'</th>'
-                
-            }
-            response=response.replace("%%COUNTRY_HEADER%%",table_header);
-
             let table_data='';
-            for(let i=0;i<rows.length;i++){
-                table_data+= '<td>' + rows[i].year + '</td>';
+            let chart_series = '[';
+            for(let i=0; i<rows.length;i++){
+                let emissions = rows[i].year;
+                if(emissions !=="N/A" && rows[i].country!=="World" && rows.country !="European Union (27)" && i<13) {
+                    chart_series = chart_series+'["'+rows[i].country+'", '+emissions+']'
+                    if(i===12) {
+                        chart_series = chart_series + "]"
+                    } else {
+                        chart_series = chart_series + ", "
+                    }
+                }
+                table_header+= '<th>'+rows[i].country +'</th>'
+                table_data+= '<td>' + emissions + '</td>';
             }
-
-            response=response.replace("%%COUNTRY_DATA%%",table_data);
-        
-
-            //send response
-            res.status(200).type('html').send(response);
+            
         });
     });
 });
