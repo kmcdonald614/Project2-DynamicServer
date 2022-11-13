@@ -112,7 +112,7 @@ app.get('/year/:selected_year', (req, res) => {
 app.get('/sector/:selected_sector', (req, res) => {
     let sector = req.params.selected_sector;
     sector = capitalize(sector);
-
+    console.log("sector: ", "{"+sector+"}");
     fs.readFile(path.join(template_dir, 'sector_template.html'), (err, template) => {
 
         let query = "SELECT * FROM emissions WHERE sector = ? AND country ='World' AND gas ='All GHG';"
@@ -120,55 +120,69 @@ app.get('/sector/:selected_sector', (req, res) => {
         db.all(query, [sector], (err, rows) => {
             console.log("ERROR: ", err);
             console.log(rows)
+            db.all("SELECT * FROM emissions WHERE sector = 'Total including LUCF' AND country ='World' AND gas ='All GHG';", (err, rows3) => {
 
-            //modify template
-            let response = template.toString();
-            response = response.replace('%%SECTOR_NAME%%', rows[0].sector);
-            let year = 1990;
-            let table_header = '';
-            for(let i=5; i < 34; i++) { //col 5 starts data | 29 cols of data
-                table_header += '<th> ' + year + ' </th>';
-                year++;
-            }
-            response = response.replace('%%YEAR_HEADER%%', table_header);
-
-            let table_data = '';
-            year = 1990;
-            for(let i=5; i < 34; i++) {
-                table_data += '<td> ' + rows[0][year.toString()] + ' </td>'
-                year++;
-            }
-            response = response.replace('%%YEAR_DATA%%', table_data);
-            
-            let query2 = "SELECT distinct sector FROM  emissions ORDER BY sector ASC;"
-            db.all(query2, (err, rows2) => {
-                console.log(rows2);
-                console.log(err);
-                let next = '';
-                let prev = '';
-                for(let i=0; i < rows2.length; i++) {
-                    if(i === 0 && rows2[i].sector === sector) {
-                        next = rows2[i+1].sector;
-                        prev = rows2[rows2.length-1].sector;
-                        break;
-                    }
-                    if(i === rows2.length - 1 && rows2[i].sector === sector) {
-                        next = rows2[0].sector;
-                        prev = rows2[i-1].sector;
-                        break;
-                    }    
-                    if(rows2[i].sector === sector) {
-                        next = rows2[i+1].sector;
-                        prev = rows2[i-1].sector;
-                        break;
-                    }
+                //modify template
+                let response = template.toString();
+                response = response.replace('%%SECTOR_NAME%%', rows[0].sector);
+                let year = 1990;
+                let table_header = '';
+                let chart1= '[';
+                for(let i=5; i < 34; i++) { //col 5 starts data | 29 cols of data
+                    chart1 = chart1+"['"+year+"', "+rows[0][year.toString()]+", "+rows3[0][year.toString()]+"]";
+                    if(i==33) {
+                        chart1 = chart1+"]";
+                    } else {
+                        chart1 = chart1+", ";
+                    } 
+                    table_header += '<th> ' + year + ' </th>';
+                    year++;
                 }
-                console.log(next)
-                response = response.replace("%%PREV_LINK%%", prev);
-                response = response.replace("%%NEXT_LINK%%", next);
-                //send response
-                res.status(200).type('html').send(response);
-            })
+                response = response.replace('%%YEAR_HEADER%%', table_header);
+                response = response.replace('%%CHART1_DATA%%', chart1);
+    
+                let table_data = '';
+                year = 1990;
+                for(let i=5; i < 34; i++) {
+                    table_data += '<td> ' + rows[0][year.toString()] + ' </td>'
+                    year++;
+                }
+                response = response.replace('%%YEAR_DATA%%', table_data);
+                
+                let query2 = "SELECT distinct sector FROM  emissions ORDER BY sector ASC;"
+                db.all(query2, (err, rows2) => {
+                    console.log(rows2);
+                    console.log(err);
+                    let next = '';
+                    let prev = '';
+                    for(let i=0; i < rows2.length; i++) {
+                        if(i === 0 && rows2[i].sector === sector) {
+                            next = rows2[i+1].sector;
+                            prev = rows2[rows2.length-1].sector;
+                            break;
+                        }
+                        if(i === rows2.length - 1 && rows2[i].sector === sector) {
+                            next = rows2[0].sector;
+                            prev = rows2[i-1].sector;
+                            break;
+                        }    
+                        if(rows2[i].sector === sector) {
+                            next = rows2[i+1].sector;
+                            prev = rows2[i-1].sector;
+                            break;
+                        }
+                    }
+                    console.log(next)
+                    response = response.replace("%%PREV_LINK%%", prev);
+                    response = response.replace("%%NEXT_LINK%%", next);
+                    //send response
+                    res.status(200).type('html').send(response);
+                })
+
+
+
+            });
+
         });
         
     });
@@ -271,7 +285,11 @@ function capitalize(string) {
     let words = string.split('_');
     let ret = '';
     for(let i=0 ; i < words.length; i++) { //Array of Capitalized words
+        if(words[i] !== "including"){
         words[i] = words[i].charAt(0).toUpperCase() + words[i].substring(1);
+        } else if(words[i].toUpperCase() == 'GHG') {
+            words[i] = words[i].toUpperCase();
+        }
         if(i < words.length-1) {
             ret += words[i] + ' ';
         } else {
