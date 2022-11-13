@@ -45,7 +45,7 @@ app.get('/sector/', (req, res) => {
     res.redirect(home);
 });
 // redirect country to base
-app.get('/world/', (req, res) => {
+app.get('/country/', (req, res) => {
     let home = '/country/world'; // <-- change this
     res.redirect(home);
 });
@@ -75,70 +75,78 @@ app.get('/year/:selected_year', (req, res) => {
         
         //query the database
         db.all(query, [], (err, rows) => {
-            console.log("ERROR: ", err);
-            //grab relevant info
-            //console.log("rows", rows);
-            let chart2 = '[';
-            db.all('SELECT sector, "'+year.toString()+'" as emissions FROM emissions WHERE country = "World" AND gas="All GHG"; ', (err, rows2) => {
-                console.log("Error on query2: ", err);
-                console.log(rows2);
-                for( let i=3; i<rows2.length; i++) {
-                    chart2 = chart2+"['"+rows2[i].sector+"', "+rows2[i].emissions+"]"
-                    if(i==rows2.length-1) {
-                        chart2 = chart2+']'; 
-                    } else {
-                        chart2 = chart2+', ';
+            if(year<2020 && year>1989) {
+
+                console.log("ERROR: ", err);
+                //grab relevant info
+                //console.log("rows", rows);
+                let chart2 = '[';
+                db.all('SELECT sector, "'+year.toString()+'" as emissions FROM emissions WHERE country = "World" AND gas="All GHG"; ', (err, rows2) => {
+                    console.log("Error on query2: ", err);
+                    console.log(rows2);
+                    for( let i=3; i<rows2.length; i++) {
+                        chart2 = chart2+"['"+rows2[i].sector+"', "+rows2[i].emissions+"]"
+                        if(i==rows2.length-1) {
+                            chart2 = chart2+']'; 
+                        } else {
+                            chart2 = chart2+', ';
+                        }
                     }
-                }
-                response=response.replace("%%COUNTRY_HEADER%%",table_header);
-                response=response.replace("%%COUNTRY_DATA%%",table_data);
-                response = response.replace("%%YEAR%%", year);                
-                response = response.replace("%%YEAR2%%", year);
-                response = response.replace("%%YEAR_NAME%%",year);
-                response = response.replace("%%CHART1_DATA%%", chart_series);
-                response = response.replace("%%CHART2_DATA%%", chart2);
-
-        
-        let prev="";
-        let next="";
-        if(year===1990) {
-            prev = "2019";
-            next = (year+1).toString();
-        } else if(year===2019) {
-            prev = (year-1).toString();
-            next = "1990";
-        } else {
-            prev = (year-1).toString();
-            next = (year+1).toString();
-        }
-
-        response=response.replace("%%PREV_LINK%%",prev);
-        response=response.replace("%%NEXT_LINK%%",next);
-
-                //send response
-                res.status(200).type('html').send(response);
-            })
-
-            
-
-            // modify template
-            let response = template.toString();
-            let table_header='';
-            let table_data='';
-            let chart_series = '[';
-            for(let i=0; i<rows.length;i++){
-                let emissions = rows[i].year;
-                if(emissions !=="N/A" && rows[i].country!=="World" && rows.country !="European Union (27)" && i<13) {
-                    chart_series = chart_series+'["'+rows[i].country+'", '+emissions+']'
-                    if(i===12) {
-                        chart_series = chart_series + "]"
+                    response=response.replace("%%COUNTRY_HEADER%%",table_header);
+                    response=response.replace("%%COUNTRY_DATA%%",table_data);
+                    response = response.replace("%%YEAR%%", year);                
+                    response = response.replace("%%YEAR2%%", year);
+                    response = response.replace("%%YEAR_NAME%%",year);
+                    response = response.replace("%%CHART1_DATA%%", chart_series);
+                    response = response.replace("%%CHART2_DATA%%", chart2);
+                    
+                    
+                    let prev="";
+                    let next="";
+                    if(year===1990) {
+                        prev = "2019";
+                        next = (year+1).toString();
+                    } else if(year===2019) {
+                        prev = (year-1).toString();
+                        next = "1990";
                     } else {
+                        prev = (year-1).toString();
+                        next = (year+1).toString();
+                    }
+                    
+                    response=response.replace("%%PREV_LINK%%",prev);
+                    response=response.replace("%%NEXT_LINK%%",next);
+                    
+                    //send response
+                    res.status(200).type('html').send(response);
+                })
+                
+                
+                
+                // modify template
+                let response = template.toString();
+                let table_header='';
+                let table_data='';
+                let chart_series = '[';
+                for(let i=0; i<rows.length;i++){
+                    let emissions = rows[i].year;
+                    if(emissions !=="N/A" && rows[i].country!=="World" && rows.country !="European Union (27)" && i<13) {
+                        chart_series = chart_series+'["'+rows[i].country+'", '+emissions+']'
+                        if(i===12) {
+                            chart_series = chart_series + "]"
+                        } else {
                         chart_series = chart_series + ", "
                     }
                 }
                 table_header+= '<th>'+rows[i].country +'</th>'
                 table_data+= '<td>' + emissions + '</td>';
             }
+        } else {
+            let route = req.originalUrl;
+            route = route.substring(6, route.length);
+            let fileNotFound = `<h1>404: File Not Found</h1><h2>Cannot find Year: ${route}</h2><a href="/year/">Return to home</a>`
+            res.status(404).type('html').send(fileNotFound);
+        }
             
         });
     });
@@ -156,14 +164,15 @@ app.get('/sector/:selected_sector', (req, res) => {
         let query = "SELECT * FROM emissions WHERE sector = ? AND country ='World' AND gas ='All GHG';"
 
         db.all(query, [sector], (err, rows) => {
-            console.log("ERROR: ", err);
-            console.log(rows)
-            db.all("SELECT * FROM emissions WHERE sector = 'Total including LUCF' AND country ='World' AND gas ='All GHG';", (err, rows3) => {
-
-                //modify template
-                let response = template.toString();
-                response = response.replace('%%SECTOR_NAME%%', rows[0].sector);
-                let year = 1990;
+            if(rows.length != 0) {
+                console.log("ERROR: ", err);
+                console.log(rows)
+                db.all("SELECT * FROM emissions WHERE sector = 'Total including LUCF' AND country ='World' AND gas ='All GHG';", (err, rows3) => {
+                    
+                    //modify template
+                    let response = template.toString();
+                    response = response.replace('%%SECTOR_NAME%%', rows[0].sector);
+                    let year = 1990;
                 let table_header = '';
                 let chart1= '[';
                 for(let i=5; i < 34; i++) { //col 5 starts data | 29 cols of data
@@ -178,7 +187,7 @@ app.get('/sector/:selected_sector', (req, res) => {
                 }
                 response = response.replace('%%YEAR_HEADER%%', table_header);
                 response = response.replace('%%CHART1_DATA%%', chart1);
-    
+                
                 let table_data = '';
                 year = 1990;
                 for(let i=5; i < 34; i++) {
@@ -229,14 +238,18 @@ app.get('/sector/:selected_sector', (req, res) => {
                     response = response.replace("%%PREV_LINK%%", prev);
                     response = response.replace("%%NEXT_LINK%%", next);
                     response = response.replace("%%DESCRIPTION%%", description[sector]);
+                    response = response.replace("%%SECTOR%%", sector);
+                    response = response.replace("%%SECTOR2%%", sector);
                     //send response
                     res.status(200).type('html').send(response);
                 })
-
-
-
-            });
-
+            }); 
+        } else {
+            let route = req.originalUrl;
+            route = route.substring(8, route.length-1);
+            let fileNotFound = `<h1>404: File Not Found</h1><h2>Cannot find Sector: ${route}</h2><a href="/sector/">Return to home</a>`
+            res.status(404).type('html').send(fileNotFound)
+        }
         });
         
     });
@@ -256,80 +269,89 @@ app.get('/country/:selected_country', (req, res) => {
         let query = "SELECT * FROM emissions WHERE country = ? AND sector = 'Total including LUCF' AND gas = 'All GHG';"
 
         db.all(query, [country], (err, rows) => {
-            console.log("ERROR: ", err);
+            if(rows.length!=0) {
 
-            //modify template
-            let response = template.toString();
-            response = response.replace('%%COUNTRY_NAME%%', rows[0].country);
-            let year = 1990;
-            let table_header = '';
-            let chart1 = '[';
-            for(let i=5; i < 34; i++) { //col 5 starts data | 29 cols of data
-                chart1 = chart1+"['"+year+"', "+rows[0][year.toString()]+"]";
-                if(i==33) {
-                    chart1 = chart1+"]";
-                } else {
-                    chart1 = chart1+", ";
+                console.log("ERROR: ", err);
+                
+                //modify template
+                let response = template.toString();
+                response = response.replace('%%COUNTRY_NAME%%', rows[0].country);
+                let year = 1990;
+                let table_header = '';
+                let chart1 = '[';
+                for(let i=5; i < 34; i++) { //col 5 starts data | 29 cols of data
+                    chart1 = chart1+"['"+year+"', "+rows[0][year.toString()]+"]";
+                    if(i==33) {
+                        chart1 = chart1+"]";
+                    } else {
+                        chart1 = chart1+", ";
+                    }
+                    table_header += '<th> ' + year + ' </th>';
+                    year++;
                 }
-                table_header += '<th> ' + year + ' </th>';
-                year++;
+                response = response.replace('%%YEAR_HEADER%%', table_header);
+                response = response.replace('%%CHART1_DATA%%', chart1);
+                response = response.replace('%%COUNTRY%%', rows[0].country);
+                response = response.replace('%%COUNTRY2%%', rows[0].country);
+                
+                let table_data = '';
+                year = 1990;
+                for(let i=5; i < 34; i++) {
+                    table_data += '<td> ' + rows[0][year.toString()] + ' </td>'
+                    year++;
+                }
+                response = response.replace('%%YEAR_DATA%%', table_data);
+                
+                let query2 = "SELECT distinct country FROM  emissions ORDER BY country ASC;"
+                db.all(query2, (err, rows2) => {
+                    console.log(err);
+                    let next = '';
+                    let prev = '';
+                    for(let i=0; i < rows2.length; i++) {
+                        if(i === 0 && rows2[i].country === country) {
+                            next = rows2[i+1].country;
+                            prev = rows2[rows2.length-1].country;
+                            break;
+                        }
+                        if(i === rows2.length - 1 && rows2[i].country === country) {
+                            next = rows2[0].country;
+                            prev = rows2[i-1].country;
+                            break;
+                        }    
+                        if(rows2[i].country === country) {
+                            next = rows2[i+1].country;
+                            prev = rows2[i-1].country;
+                            break;
+                        }
+                    }
+                    response = response.replace("%%PREV_LINK%%", prev);
+                    response = response.replace("%%NEXT_LINK%%", next);
+                    //send response
+                    res.status(200).type('html').send(response);
+                })
+            } else {
+                let route = req.originalUrl;
+                 route = route.substring(9, route.length);
+                let fileNotFound = `<h1>404: File Not Found</h1><h2>Cannot find Country: ${route}</h2><a href="/country/">Return to home</a>`
+                 res.status(404).type('html').send(fileNotFound);
             }
-            response = response.replace('%%YEAR_HEADER%%', table_header);
-            response = response.replace('%%CHART1_DATA%%', chart1);
-            response = response.replace('%%COUNTRY%%', rows[0].country);
-            response = response.replace('%%COUNTRY2%%', rows[0].country);
-
-            let table_data = '';
-            year = 1990;
-            for(let i=5; i < 34; i++) {
-                table_data += '<td> ' + rows[0][year.toString()] + ' </td>'
-                year++;
-            }
-            response = response.replace('%%YEAR_DATA%%', table_data);
+            });
             
-            let query2 = "SELECT distinct country FROM  emissions ORDER BY country ASC;"
-            db.all(query2, (err, rows2) => {
-                console.log(err);
-                let next = '';
-                let prev = '';
-                for(let i=0; i < rows2.length; i++) {
-                    if(i === 0 && rows2[i].country === country) {
-                        next = rows2[i+1].country;
-                        prev = rows2[rows2.length-1].country;
-                        break;
-                    }
-                    if(i === rows2.length - 1 && rows2[i].country === country) {
-                        next = rows2[0].country;
-                        prev = rows2[i-1].country;
-                        break;
-                    }    
-                    if(rows2[i].country === country) {
-                        next = rows2[i+1].country;
-                        prev = rows2[i-1].country;
-                        break;
-                    }
-                }
-                response = response.replace("%%PREV_LINK%%", prev);
-                response = response.replace("%%NEXT_LINK%%", next);
-                //send response
-                res.status(200).type('html').send(response);
-            })
+            
         });
-        
-        
     });
-});
-
-// GET request handler for testing route
-app.get('/test/', (req, res) => {
-    fs.readFile(path.join(template_dir, 'test_template.html'), (err, template) => {
-        console.log(err);
+    
+    // GET request handler for testing route
+    app.get('/test/', (req, res) => {
+        fs.readFile(path.join(template_dir, 'test_template.html'), (err, template) => {
+            console.log(err);
         let response = template.toString();
         res.status(200).type('html').send(response)
     });
 })
 
-app.use((req, res, next) => {
+// 404 rout handling
+app.all("*", (req, res, next) => {
     let route = req.originalUrl;
     let fileNotFound = `<h1>404: File Not Found</h1><h2>Cannot find route: ${route}</h2>`
     res.status(404).type('html').send(fileNotFound)
