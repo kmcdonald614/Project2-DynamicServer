@@ -79,11 +79,41 @@ app.get('/year/:selected_year', (req, res) => {
                 response=response.replace("%%COUNTRY_DATA%%",table_data);
                 response = response.replace("%%YEAR%%", year);                
                 response = response.replace("%%YEAR2%%", year);
+                response = response.replace("%%YEAR_NAME%%",year);
                 response = response.replace("%%CHART1_DATA%%", chart_series);
                 response = response.replace("%%CHART2_DATA%%", chart2);
+
+                const years= ["1990","1991","1992","1993","1994","1995",
+        "1996","1997","1998","1999","2000","2001","2002","2003","2004"
+    ,"2005","2006","2007","2008","2009","2010","2011","2012","2013",
+"2014","2015","2016","2017","2018","2019"];
+        let prev="";
+        let next="";
+        for(let i=0;i<years.length;i++){
+            if(years[i]===year&&years[i]==1990){
+                console.log(years[years.length-1]);
+                prev=years[years.length-1];
+                next=years[i+1];
+                break;
+            }else if(years[i]===year&&years[i]!=1990&&years[i]<2019){
+                prev=years[i-1];
+                next=years[i+1];
+                break;
+            }else{
+                prev=years[i-1];
+                next=years[0];
+                break;
+            }
+        }
+
+        response=response.replace("%%PREV_LINK%%",prev);
+        response=response.replace("%%NEXT_LINK%%",next);
+
                 //send response
                 res.status(200).type('html').send(response);
             })
+
+            
 
             // modify template
             let response = template.toString();
@@ -106,6 +136,8 @@ app.get('/year/:selected_year', (req, res) => {
             
         });
     });
+
+    
 });
 
 // GET request handler for sector route (e.x., 'localhost:8000/sector/all_ghg')
