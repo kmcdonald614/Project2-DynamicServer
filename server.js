@@ -158,7 +158,6 @@ app.get('/year/:selected_year', (req, res) => {
 app.get('/sector/:selected_sector', (req, res) => {
     let sector = req.params.selected_sector;
     sector = capitalize(sector);
-    console.log("sector: ", "{"+sector+"}");
     fs.readFile(path.join(template_dir, 'sector_template.html'), (err, template) => {
 
         let query = "SELECT * FROM emissions WHERE sector = ? AND country ='World' AND gas ='All GHG';"
@@ -167,7 +166,7 @@ app.get('/sector/:selected_sector', (req, res) => {
             if(rows.length != 0) {
                 console.log("ERROR: ", err);
                 console.log(rows)
-                db.all("SELECT * FROM emissions WHERE sector = 'Total including LUCF' AND country ='World' AND gas ='All GHG';", (err, rows3) => {
+                db.all("SELECT * FROM emissions WHERE sector = 'Total excluding LUCF' AND country ='World' AND gas ='All GHG';", (err, rows3) => {
                     
                     //modify template
                     let response = template.toString();
@@ -185,8 +184,11 @@ app.get('/sector/:selected_sector', (req, res) => {
                     table_header += '<th> ' + year + ' </th>';
                     year++;
                 }
+                let chart2 = '['+'["'+sector+'", '+rows[0]["2019"]+'], [ "Total", '+rows3[0]["2019"]+']]'
+                console.log(chart2);
                 response = response.replace('%%YEAR_HEADER%%', table_header);
                 response = response.replace('%%CHART1_DATA%%', chart1);
+                response = response.replace('%%CHART2_DATA%%', chart2);
                 
                 let table_data = '';
                 year = 1990;
@@ -198,8 +200,7 @@ app.get('/sector/:selected_sector', (req, res) => {
                 
                 let query2 = "SELECT distinct sector FROM  emissions ORDER BY sector ASC;"
                 db.all(query2, (err, rows2) => {
-                    console.log(rows2);
-                    console.log(err);
+                    console.log("ERROR: ", err);
                     let next = '';
                     let prev = '';
                     for(let i=0; i < rows2.length; i++) {

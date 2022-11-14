@@ -18,36 +18,40 @@
 			</ul>
 			</div>
 		</div>
+		<div class="grid-x">
+			<div class="cell small-2"></div>
+			<div class="cell small-8">
+				<div class="callout primary"><h1 style="text-align: center;">Greenhouse Gas Emissions<br>%%COUNTRY_NAME%%</h1></div>
+			</div>
+			<div class="cell small-2"></div>
+		</div>
 
 		<div class="grid-container">
 			<div class="grid-x padding-x">
-				<div class="cell">
-					<h1>%%COUNTRY_NAME%%</h1>
-					<p>All greenhouse gases</p>
-					<p>All Sectors</p>
+				<div class="cell small-12" style="text-align:center;">
+					<a href="%%PREV_LINK%%" class="button">Previous Country</a>
+					<a href="%%NEXT_LINK%%" class="button">Next Country</a>
 				</div>
 				<div class="cell medium-12 medium-cell-block">
 					<div class="">
 						<table >
 							<thead>
 								<tr>
+									<th>Year: </th>
 									%%YEAR_HEADER%%
 								</tr>
 							</thead>
 							<tbody>
 								<tr>
+									<th>Emissions in MtCO2e: </th>
 									%%YEAR_DATA%%
 								</tr>
 							</tbody>
 						</table>
 					</div>
 				</div>
-				<div class="cell small-12" id="chart1" style="height: 500px; width: 1000px;">
+				<div class="cell small-12" id="chart1" style="height: 500px; width: 100%;">
 					
-				</div>
-				<div class="cell">
-					<a href="%%PREV_LINK%%">Previous Page</a>
-					<a href="%%NEXT_LINK%%">Next Page</a>
 				</div>
 			</div>
 		</div>
