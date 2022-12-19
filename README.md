@@ -1,2 +1,1 @@
-# Project2-DynamicServer
- CISC 375 Dynamic Server Project, using the greehouse gas emissions dataset from climatewatchdata.org
+What me and my partners had done in this project was to dynamically populate a webpage using HTML templates and populating them via javascript.
